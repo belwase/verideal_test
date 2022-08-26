@@ -36,82 +36,92 @@ export default defineComponent({
     };
   },
   methods: {
-    async start_process(id){
-      return await fetch( this.API_URL, {
-        method: 'POST',
-        body: JSON.stringify({'id':id})
-      } )
-                .then( function( response ){
-                    if( response.status != 200 ){
-                        throw response.status;
-                    }else{
-                        return response.json();
-                    }
-                }.bind(this))
-                .then( function( data ){
-                  console.log(data);
-                  return true;
+    async start_process(id) {
+        return await fetch(this.API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    'id': id
+                })
+            })
+            .then(function(response) {
+                if (response.status != 200) {
+                    throw response.status;
+                } else {
+                    return response.json();
+                }
+            }.bind(this))
+            .then(function(data) {
+                console.log(data);
+                return true;
 
-                }.bind(this))
-                .catch( function( error ){
-                    console.log(error);
-                    return false;
-                }.bind(this));
+            }.bind(this))
+            .catch(function(error) {
+                console.log(error);
+                return false;
+            }.bind(this));
 
     },
     async start(event) {
-      var id = event.target.id;
-      console.log("starting process..", id);
-      var status = await this.start_process(id);
-      //console.log(status);
-      if(status){
-          var percent = 0;
-          var finished = false;
-          var i = 0;
-          while(!finished){
-            console.log(id, finished, percent);
-            sleep(200);
-            await fetch( this.API_URL + '?id='+id )
-                    .then( function( response ){
-                        if( response.status != 200 ){
-                            finished = true;
-                            throw response.status;
-                        }else{
-                            return response.json();
-                        }
-                    }.bind(this))
-                    .then( function( data ){
-                      console.log(data);
-                      var percent = data['percent'];
-                      if(id=='b1'){ this.p1_width = percent + '%'; }
-                      else if(id=='b2'){ this.p2_width = percent + '%'; };
-                      if(percent>=100){
-                        console.log("hihi")
-                        finished = true;
-                      }
+          var id = event.target.id;
+          console.log("starting process..", id);
+          var status = await this.start_process(id);
+          //console.log(status);
+          if (status) {
+              var percent = 0;
+              var finished = false;
+              var i = 0;
+              while (!finished) {
+                  console.log(id, finished, percent);
+                  sleep(200);
+                  await fetch(this.API_URL + '?id=' + id)
+                      .then(function(response) {
+                          if (response.status != 200) {
+                              finished = true;
+                              throw response.status;
+                          } else {
+                              return response.json();
+                          }
+                      }.bind(this))
+                      .then(function(data) {
+                          console.log(data);
+                          var percent = data['percent'];
+                          if (id == 'b1') {
+                              this.p1_width = percent + '%';
+                          } else if (id == 'b2') {
+                              this.p2_width = percent + '%';
+                          };
+                          if (percent >= 100) {
+                              console.log("hihi")
+                              finished = true;
+                          }
 
-                    }.bind(this))
-                    .catch( function( error ){
-                        console.log(error);
-                        finished = true;
-                        if(id=='b1'){ this.p1_width = error }
-                        else if(id=='b2'){ this.p2_width = error };
+                      }.bind(this))
+                      .catch(function(error) {
+                          console.log(error);
+                          finished = true;
+                          if (id == 'b1') {
+                              this.p1_width = error
+                          } else if (id == 'b2') {
+                              this.p2_width = error
+                          };
 
-                    }.bind(this));
-           i = i + 1;
-           if(i>1000){finished = true;} // max 1000 iterations wait
+                      }.bind(this));
+                  i = i + 1;
+                  if (i > 1000) {
+                      finished = true;
+                  } // max 1000 iterations wait
 
+              }
+
+          } else {
+              console.log("unable to start process.", id);
           }
 
-      }else{
-        console.log("unable to start process.", id);
-      }
-
-    },
-    stop() {
-      console.log("stop");
-      //this.progresses.pop()?.finish();
-    },
+      },
+      stop() {
+          console.log("stop");
+          //this.progresses.pop()?.finish();
+      },
   },
 });
 </script>
