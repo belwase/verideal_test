@@ -26,3 +26,6 @@ Open `http://localhost:5173/`
 
 Click "Start"
 
+## Demo
+
+![Screenshot](demo.png)
